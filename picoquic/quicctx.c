@@ -855,6 +855,25 @@ void picoquic_set_stream_data_consumption_mode(picoquic_quic_t* quic, int defer_
             cnx = cnx->next_in_table;
         }
     }
+    else if (!enable && quic->defer_stream_data_consumption != 0) {
+        picoquic_cnx_t* cnx = quic->cnx_list;
+        while (cnx != NULL) {
+            picoquic_stream_head_t* stream = picoquic_first_stream(cnx);
+            while (stream != NULL) {
+                picoquic_stream_head_t* next_stream = picoquic_next_stream(stream);
+                if (stream->delivered_offset > stream->consumed_offset) {
+                    (void)picoquic_stream_data_consumed(cnx, stream->stream_id, stream->delivered_offset);
+                }
+                stream = next_stream;
+            }
+            for (size_t epoch = 0; epoch < PICOQUIC_NUMBER_OF_EPOCHS; epoch++) {
+                if (cnx->tls_stream[epoch].delivered_offset > cnx->tls_stream[epoch].consumed_offset) {
+                    cnx->tls_stream[epoch].consumed_offset = cnx->tls_stream[epoch].delivered_offset;
+                }
+            }
+            cnx = cnx->next_in_table;
+        }
+    }
     quic->defer_stream_data_consumption = enable;
 }
 
