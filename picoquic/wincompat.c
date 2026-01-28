@@ -22,7 +22,7 @@ int wintimeofday(struct timeval* tv, struct timezone* tz)
 {
     if (tv != NULL) {
         FILETIME ft;
-        uint64_t tmp = 0;
+        uint64_t tmp;
         
         /* Number of 100-ns intervals between 1601-01-01 and 1970-01-01 */
         static const uint64_t EPOCH_DIFF = 116444736000000000ULL;
@@ -30,8 +30,7 @@ int wintimeofday(struct timeval* tv, struct timezone* tz)
         GetSystemTimeAsFileTime(&ft);
         
         /* Convert FILETIME to 64-bit integer */
-        tmp |= ((uint64_t)ft.dwHighDateTime << 32);
-        tmp |= ft.dwLowDateTime;
+        tmp = ((uint64_t)ft.dwHighDateTime << 32) | ft.dwLowDateTime;
         
         /* Convert from Windows epoch to Unix epoch */
         tmp -= EPOCH_DIFF;

@@ -28,7 +28,7 @@
 #define _SSIZE_T_DEFINED
 typedef SSIZE_T ssize_t;
 #endif
-#include <Winsock2.h>
+#include <WinSock2.h>
 #include <ws2tcpip.h>
 
 #ifndef gettimeofday
