@@ -115,6 +115,11 @@ set(PICOQUIC_LIBRARY_FILES
     picoquic/unified_log.c
     picoquic/util.c)
 
+# Windows compatibility: add wintimeofday implementation
+if(WIN32)
+    list(APPEND PICOQUIC_LIBRARY_FILES picoquic/wincompat.c)
+endif()
+
 set(PICOQUIC_CORE_HEADERS
      picoquic/picoquic.h
      picoquic/picosocks.h
@@ -225,6 +230,17 @@ if(PICOQUIC_FETCH_PTLS)
         GIT_REPOSITORY      https://github.com/h2o/picotls.git
         GIT_TAG             5a4461d8a3948d9d26bf861e7d90cb80d8093515)
     FetchContent_MakeAvailable(picotls)
+    if(WIN32)
+        set(PTLS_TARGETS picotls-core picotls-fusion picotls-minicrypto picotls-openssl)
+        foreach(target IN LISTS PTLS_TARGETS)
+            if(TARGET ${target})
+                target_include_directories(${target} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/picoquic)
+                target_compile_options(${target} PRIVATE
+                    $<$<C_COMPILER_ID:MSVC>:/FIwincompat.h>
+                    $<$<OR:$<C_COMPILER_ID:GNU>,$<C_COMPILER_ID:Clang>>:-include wincompat.h>)
+            endif()
+        endforeach()
+    endif()
 endif()
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")

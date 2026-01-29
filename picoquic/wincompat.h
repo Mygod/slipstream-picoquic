@@ -23,8 +23,13 @@
 #define WINCOMPAT_H
 
 #include <stdint.h>
-#define ssize_t int
-#include <Winsock2.h>
+#include <BaseTsd.h>
+#ifndef _SSIZE_T_DEFINED
+#define _SSIZE_T_DEFINED
+typedef SSIZE_T ssize_t;
+#endif
+#include <WinSock2.h>
+#include <ws2tcpip.h>
 
 #ifndef gettimeofday
 #define gettimeofday wintimeofday
@@ -39,10 +44,13 @@
 extern "C" {
 #endif
 
+#ifndef _TIMEZONE_DEFINED
+#define _TIMEZONE_DEFINED
     struct timezone {
         int tz_minuteswest;     /* minutes west of Greenwich */
         int tz_dsttime;         /* type of DST correction */
     };
+#endif
 
     int wintimeofday(struct timeval* tv, struct timezone* tz);
 
