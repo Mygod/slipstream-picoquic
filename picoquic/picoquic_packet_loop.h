@@ -125,6 +125,12 @@ typedef struct st_picoquic_packet_loop_options_t {
 * Parameters are set in a struct, for future
 * extensibility.
  */
+#ifdef _WINDOWS
+typedef int picoquic_packet_loop_ssize_t;
+#else
+typedef ssize_t picoquic_packet_loop_ssize_t;
+#endif
+
 typedef struct st_picoquic_packet_loop_param_t {
     uint16_t local_port;
     int local_af;
@@ -135,8 +141,8 @@ typedef struct st_picoquic_packet_loop_param_t {
     int simulate_eio;
     size_t send_length_max;
     int is_client;
-    ssize_t (*decode)(void* slot_p, void* callback_ctx, unsigned char** dest_buf, const unsigned char* src_buf, size_t src_buf_len, struct sockaddr_storage *peer_addr, struct sockaddr_storage *local_addr);
-    ssize_t (*encode)(void* slot_p, void* callback_ctx, unsigned char** dest_buf, const unsigned char* src_buf, size_t src_buf_len, size_t* segment_len, struct sockaddr_storage *peer_addr, struct sockaddr_storage *local_addr);
+    picoquic_packet_loop_ssize_t (*decode)(void* slot_p, void* callback_ctx, unsigned char** dest_buf, const unsigned char* src_buf, size_t src_buf_len, struct sockaddr_storage *peer_addr, struct sockaddr_storage *local_addr);
+    picoquic_packet_loop_ssize_t (*encode)(void* slot_p, void* callback_ctx, unsigned char** dest_buf, const unsigned char* src_buf, size_t src_buf_len, size_t* segment_len, struct sockaddr_storage *peer_addr, struct sockaddr_storage *local_addr);
     int64_t delay_max;
 } picoquic_packet_loop_param_t;
 
@@ -145,7 +151,11 @@ int picoquic_packet_loop_v2(picoquic_quic_t* quic,
     picoquic_packet_loop_cb_fn loop_callback,
     void * loop_callback_ctx);
 
+#ifdef _WINDOWS
+DWORD WINAPI picoquic_packet_loop_v3(LPVOID v_ctx);
+#else
 void* picoquic_packet_loop_v3(void* v_ctx);
+#endif
 /* Threaded version of packet loop, when running picoquic in a background thread.
 * 
 * Thread is started by calling picoquic_start_network_thread, which
@@ -334,4 +344,3 @@ int picoquic_packet_loop_open_sockets(uint16_t local_port, int local_af, int soc
 }
 #endif
 #endif /* PICOQUIC_PACKET_LOOP_H */
-

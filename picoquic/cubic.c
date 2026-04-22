@@ -56,7 +56,7 @@ static void picoquic_cubic_reset(picoquic_cubic_state_t* cubic_state, picoquic_p
     cubic_state->beta = 19.0 / 20.0;
     cubic_state->start_of_epoch = current_time;
     cubic_state->previous_start_of_epoch = 0;
-    cubic_state->W_reno = PICOQUIC_PATH_CWIN_INITIAL;
+    cubic_state->W_reno = (double)PICOQUIC_PATH_CWIN_INITIAL;
     cubic_state->recovery_sequence = 0;
     path_x->cwin = PICOQUIC_PATH_CWIN_INITIAL;
 }
@@ -153,7 +153,7 @@ static void picoquic_cubic_enter_recovery(picoquic_cnx_t * cnx,
         path_x->is_ssthresh_initialized = 0;
         cubic_state->previous_start_of_epoch = cubic_state->start_of_epoch;
         cubic_state->start_of_epoch = current_time;
-        cubic_state->W_reno = PICOQUIC_PATH_CWIN_MINIMUM;
+        cubic_state->W_reno = (double)PICOQUIC_PATH_CWIN_MINIMUM;
         path_x->cwin = PICOQUIC_PATH_CWIN_MINIMUM;
     }
     else {
