@@ -22,6 +22,10 @@
 #ifndef PICOQUIC_PACKET_LOOP_H
 #define PICOQUIC_PACKET_LOOP_H
 
+#ifdef _WINDOWS
+#include "wincompat.h"
+#endif
+
 #include "picosocks.h"
 #include "picoquic.h"
 #include "picoquic_utils.h"
@@ -334,4 +338,3 @@ int picoquic_packet_loop_open_sockets(uint16_t local_port, int local_af, int soc
 }
 #endif
 #endif /* PICOQUIC_PACKET_LOOP_H */
-
