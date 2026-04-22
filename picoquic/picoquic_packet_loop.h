@@ -149,7 +149,11 @@ int picoquic_packet_loop_v2(picoquic_quic_t* quic,
     picoquic_packet_loop_cb_fn loop_callback,
     void * loop_callback_ctx);
 
+#ifdef _WINDOWS
+DWORD WINAPI picoquic_packet_loop_v3(LPVOID v_ctx);
+#else
 void* picoquic_packet_loop_v3(void* v_ctx);
+#endif
 /* Threaded version of packet loop, when running picoquic in a background thread.
 * 
 * Thread is started by calling picoquic_start_network_thread, which
